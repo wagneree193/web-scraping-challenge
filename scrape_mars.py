@@ -34,14 +34,45 @@ def scrape_info():
 
     news_p = soup.find_all('div', class_='article_teaser_body')[0].text
 
-    # exclude the print code because it will be returned by the scrape at the end
+    # exclude the print command because it will be returned by the scrape at the end
 
+    # space images code
+    #JPL Mars Featured Image 
+    jpl_url = 'https://www.jpl.nasa.gov'
+    image_url = "https://www.jpl.nasa.gov/images?search=&category=Mars"
+    browser.visit(image_url)
+
+    html = browser.html
+    soup_img = bs(html, 'html.parser')
+
+    #get relative image path from the search page
+    relative_url = soup_img.find_all('img')[2]["src"]
+    #add search result to get the featured image path
+    featured_image_url = image_url + relative_url
+    # exclude print command
+
+    # mars data table
+    #Mars facts
+    # scrape the fact table using pandas
+    facts_url = 'https://space-facts.com/mars/'
+    fact_table = pd.read_html(facts_url)
+    
+    mars_comparison = fact_table[1]
+    mars_comparison_html.replace('\n','')
+
+    # mars hemisphere data 
+    astrogeo_url = 'https://astrogeology.usgs.gov'
+    hemi_url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+
+    browser.visit(hemi_url)
+    hemi_html = browser.html
+    soup_geo = bs(hemi_html, 'html.parser')
 
 
 
 
     driver.close()
-    return return_data
+    return mars_data_dict
     
 
 if __name__ == "__main__":
