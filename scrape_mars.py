@@ -58,7 +58,9 @@ def scrape_info():
     fact_table = pd.read_html(facts_url)
     
     mars_comparison = fact_table[1]
+    mars_comparison_html = mars_comparison.to_html()
     mars_comparison_html.replace('\n','')
+
 
     # mars hemisphere data 
     astrogeo_url = 'https://astrogeology.usgs.gov'
@@ -67,6 +69,34 @@ def scrape_info():
     browser.visit(hemi_url)
     hemi_html = browser.html
     soup_geo = bs(hemi_html, 'html.parser')
+    # use beautiful soup to find all data for each hemisphere
+    hemisphere_path = soup_geo.find('div', class_='collapsible results')
+    hemisphere_data = hemisphere_path.find_all('div', class_='item')
+
+    #make an empty list for the urls
+
+    hemisphere_url_list = []
+
+    #loop through the data for each hemisphere to scrape the target data
+    #title is under h3 in the inspect pane
+    for h in hemisphere_data:
+    #     title
+        title =h.find('h3').text
+    #     image link
+        hemis = h.find('div', class_= "description")
+        hemi_link = hemis.a['href']
+        browser.visit(astrogeo_url + hemi_link)    
+        html = browser.html
+        soup_hemi = bs(html, 'html.parser')   
+        img_path = soup_hemi.find('div', class_='downloads')
+        img_url = img_path.find('li').a['href']
+
+        # make dictionary for title and url
+        hemi_dict = {}
+        hemi_dict['title'] = title
+        hemi_dict['img_url'] = img_url
+        hemisphere_url_list.append(hemi_dict)
+    
 
 
 
