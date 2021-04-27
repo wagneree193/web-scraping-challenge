@@ -98,6 +98,14 @@ def scrape_info():
         hemisphere_url_list.append(hemi_dict)
     
 
+    mars_data_dict = {
+        "news_title": news_title,
+        "news_p":news_p,
+        "featured_image_url":featured_image_url,
+        "mars_comparison_html" : mars_comparison_html,
+        "hemisphere_url_list" : hemisphere_url_list
+
+    }
 
 
 
