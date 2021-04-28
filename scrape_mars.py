@@ -11,22 +11,25 @@ from flask_pymongo import PyMongo
 import pymongo
 from webdriver_manager.chrome import ChromeDriverManager
 
-def init_browser():
-    executable_path = {'executable_path':'chromedriver'}
-    return Browser("chrome", **executable_path, headless=False)
+# def init_browser():
+#     executable_path = {'executable_path':'chromedriver'}
+#     return Browser("chrome", **executable_path, headless=False)
 
 def scrape_info():
     driver = webdriver.Chrome(ChromeDriverManager().install())
-    browser = init_browser()
+    # browser = init_browser()
     mars_data_dict = {}
 
     # mars news code
     # connect to URL
     nasa_url = 'https://mars.nasa.gov/news/'
-    browser.visit(nasa_url)
+    driver.get(nasa_url)
+    # browser.visit(nasa_url)
     # set up parser
-    html = browser.html
-    soup = bs(html, 'html.parser')
+    # html = browser.html
+    html = driver.page_source
+    soup = bs(html, 'lxml')
+    # soup = bs(html, 'html.parser')
     #get most recent news article title and paragraph
     #calling 0th element ensures you will get the first title
     #go to the inspector pane on the web page to find the class for the header and the paragraph
@@ -40,10 +43,10 @@ def scrape_info():
     #JPL Mars Featured Image 
     jpl_url = 'https://www.jpl.nasa.gov'
     image_url = "https://www.jpl.nasa.gov/images?search=&category=Mars"
-    browser.visit(image_url)
+    driver.get(image_url)
 
-    html = browser.html
-    soup_img = bs(html, 'html.parser')
+    html = driver.page_source
+    soup_img = bs(html, 'lxml')
 
     #get relative image path from the search page
     relative_url = soup_img.find_all('img')[2]["src"]
@@ -66,9 +69,9 @@ def scrape_info():
     astrogeo_url = 'https://astrogeology.usgs.gov'
     hemi_url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
 
-    browser.visit(hemi_url)
-    hemi_html = browser.html
-    soup_geo = bs(hemi_html, 'html.parser')
+    driver.get(hemi_url)
+    hemi_html = driver.page_source
+    soup_geo = bs(hemi_html, 'lxml')
     # use beautiful soup to find all data for each hemisphere
     hemisphere_path = soup_geo.find('div', class_='collapsible results')
     hemisphere_data = hemisphere_path.find_all('div', class_='item')
@@ -85,9 +88,9 @@ def scrape_info():
     #     image link
         hemis = h.find('div', class_= "description")
         hemi_link = hemis.a['href']
-        browser.visit(astrogeo_url + hemi_link)    
-        html = browser.html
-        soup_hemi = bs(html, 'html.parser')   
+        driver.get(astrogeo_url + hemi_link)    
+        html = driver.page_source
+        soup_hemi = bs(html, 'lxml')   
         img_path = soup_hemi.find('div', class_='downloads')
         img_url = img_path.find('li').a['href']
 
